@@ -1,0 +1,32 @@
+# Node modules (will be installed in container)
+node_modules/
+npm-debug.log*
+
+# Git
+.git/
+.gitignore
+
+# Documentation
+*.md
+!README.md
+
+# Storage (mounted as volume)
+storage/
+
+# Temporary files
+temp/
+test-server/
+
+# IDE and OS files
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# Forge installer artifacts
+forge-installer.jar
+forge-installer.jar.log
+
+# Environment (will be provided via docker-compose)
+.env
+.env.local

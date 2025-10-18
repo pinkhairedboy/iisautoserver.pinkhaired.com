@@ -1,0 +1,30 @@
+services:
+  iisautoserver-app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: iisautoserver.pinkhaired.com
+    restart: unless-stopped
+    ports:
+      - "3003:3003"
+    volumes:
+      # Storage volume for persistent data (latest.zip, current.txt)
+      - ./storage:/app/storage
+      # Forge clean template (read-only)
+      - ./forge-clean:/app/forge-clean:ro
+    environment:
+      - NODE_ENV=production
+      - PORT=3003
+      # Yandex.Disk public folder URL
+      - YANDEX_DISK_URL=https://disk.yandex.ru/d/m0vmhfXyyBE7G
+    networks:
+      - iisautoserver-network
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+networks:
+  iisautoserver-network:
+    driver: bridge

@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IIS Auto Server - Industrial Server Builder</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Courier New', monospace;
+            background: #d5d5d5 url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGRlZnM+PHBhdHRlcm4gaWQ9ImdyaWQiIHdpZHRoPSI0MCIgaGVpZ2h0PSI0MCIgcGF0dGVyblVuaXRzPSJ1c2VyU3BhY2VPblVzZSI+PHBhdGggZD0iTSAwIDEwIEwgNDAgMTAgTSAxMCAwIEwgMTAgNDAgTSAwIDIwIEwgNDAgMjAgTSAyMCAwIEwgMjAgNDAgTSAwIDMwIEwgNDAgMzAgTSAzMCAwIEwgMzAgNDAiIGZpbGw9Im5vbmUiIHN0cm9rZT0icmdiYSgwLDAsMCwwLjAzKSIgc3Ryb2tlLXdpZHRoPSIxIi8+PC9wYXR0ZXJuPjwvZGVmcz48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSJ1cmwoI2dyaWQpIi8+PC9zdmc+');
+            height: 100vh;
+            width: 100vw;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 0;
+            margin: 0;
+            color: #2a2a2a;
+            overflow: hidden;
+        }
+
+        .container {
+            background: linear-gradient(135deg, #f5f5f5 0%, #e8e8e8 100%);
+            border: 3px solid #999;
+            box-shadow:
+                0 0 0 1px #bbb,
+                0 5px 20px rgba(0, 0, 0, 0.15),
+                inset 0 1px 0 rgba(255, 255, 255, 0.8);
+            width: 900px;
+            height: calc(100vh - 40px);
+            max-height: 1000px;
+            padding: 0;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, #4a90e2, #357abd, #4a90e2);
+        }
+
+        .header {
+            background: linear-gradient(180deg, #e0e0e0 0%, #d0d0d0 100%);
+            padding: 20px 30px;
+            border-bottom: 2px solid #aaa;
+            position: relative;
+        }
+
+        .header::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, #4a90e2, transparent);
+        }
+
+        h1 {
+            font-family: 'Press Start 2P', monospace;
+            color: #2c5aa0;
+            font-size: 1.5em;
+            margin-bottom: 10px;
+            text-shadow: 1px 1px 0 rgba(255, 255, 255, 0.8);
+            letter-spacing: 2px;
+        }
+
+        .subtitle {
+            color: #666;
+            font-size: 0.9em;
+            font-family: 'Courier New', monospace;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .content {
+            padding: 25px 30px;
+            flex: 1;
+            overflow-y: auto;
+            overflow-x: hidden;
+        }
+
+        .content::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .content::-webkit-scrollbar-track {
+            background: #e0e0e0;
+            border-left: 1px solid #ccc;
+        }
+
+        .content::-webkit-scrollbar-thumb {
+            background: #4a90e2;
+            border-radius: 4px;
+        }
+
+        .content::-webkit-scrollbar-thumb:hover {
+            background: #357abd;
+        }
+
+        .panel {
+            background: rgba(255, 255, 255, 0.6);
+            border: 2px solid #bbb;
+            border-left: 4px solid #4a90e2;
+            padding: 15px;
+            margin-bottom: 12px;
+            position: relative;
+            box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.8);
+        }
+
+        .panel p {
+            line-height: 1.5;
+            color: #444;
+            font-size: 0.9em;
+        }
+
+        .panel::before {
+            content: '';
+            position: absolute;
+            top: -2px;
+            right: -2px;
+            width: 8px;
+            height: 8px;
+            background: #4a90e2;
+        }
+
+        .panel h2 {
+            color: #2c5aa0;
+            font-size: 0.95em;
+            margin-bottom: 12px;
+            font-family: 'Courier New', monospace;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .version-display {
+            background: #fff;
+            border: 2px solid #4a90e2;
+            padding: 12px 15px;
+            margin-bottom: 15px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.85em;
+            box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+
+        .version-display strong {
+            color: #2c5aa0;
+            display: inline-block;
+            min-width: 140px;
+            font-weight: bold;
+        }
+
+        .version-display .value {
+            color: #333;
+        }
+
+        .status {
+            color: #e67e22;
+            font-weight: bold;
+        }
+
+        .status.ready { color: #27ae60; }
+        .status.building { color: #e67e22; }
+        .status.error { color: #c0392b; }
+
+        .download-btn {
+            background: linear-gradient(180deg, #5a9fd4 0%, #4a90e2 100%);
+            color: #fff;
+            border: 3px solid #2c5aa0;
+            padding: 15px 35px;
+            font-size: 1em;
+            font-family: 'Courier New', monospace;
+            font-weight: bold;
+            text-transform: uppercase;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+            position: relative;
+            transition: all 0.3s ease;
+            box-shadow:
+                0 4px 6px rgba(0, 0, 0, 0.2),
+                inset 0 1px 0 rgba(255, 255, 255, 0.3);
+            letter-spacing: 2px;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+        }
+
+        .download-btn:hover {
+            background: linear-gradient(180deg, #6aafed 0%, #5a9fd4 100%);
+            box-shadow:
+                0 6px 8px rgba(0, 0, 0, 0.25),
+                inset 0 1px 0 rgba(255, 255, 255, 0.4);
+            transform: translateY(-2px);
+        }
+
+        .download-btn:active {
+            transform: translateY(0);
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 8px;
+            margin: 0;
+        }
+
+        .info-item {
+            background: rgba(74, 144, 226, 0.1);
+            border-left: 3px solid #4a90e2;
+            padding: 10px 12px;
+            font-size: 0.8em;
+            line-height: 1.4;
+            color: #333;
+        }
+
+        .info-item::before {
+            content: "▶ ";
+            color: #4a90e2;
+            margin-right: 5px;
+        }
+
+        footer {
+            background: #d0d0d0;
+            padding: 15px 30px;
+            border-top: 2px solid #aaa;
+            text-align: center;
+            font-size: 0.8em;
+            color: #666;
+            flex-shrink: 0;
+        }
+
+        footer a {
+            color: #2c5aa0;
+            text-decoration: none;
+            transition: color 0.3s;
+            font-weight: bold;
+        }
+
+        footer a:hover {
+            color: #4a90e2;
+        }
+
+        .tech-line {
+            height: 1px;
+            background: linear-gradient(90deg, transparent, #aaa, transparent);
+            margin: 15px 0;
+        }
+
+        @media (max-width: 600px) {
+            h1 {
+                font-size: 1em;
+            }
+
+            .download-btn {
+                padding: 15px 30px;
+                font-size: 0.9em;
+            }
+
+            .content {
+                padding: 20px;
+            }
+        }
+
+        /* Loading animation */
+        .loading {
+            display: inline-block;
+            color: #00c8ff;
+        }
+
+        .loading::after {
+            content: '...';
+            animation: dots 1.5s steps(4, end) infinite;
+        }
+
+        @keyframes dots {
+            0%, 20% { content: '.'; }
+            40% { content: '..'; }
+            60%, 100% { content: '...'; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1 data-i18n="title">IIS AUTO SERVER</h1>
+            <p class="subtitle" data-i18n="subtitle">Industrial Server Builder v1.0</p>
+        </div>
+
+        <div class="content">
+            <div class="version-display" id="version-info">
+                <div><strong data-i18n="currentVersion">CURRENT VERSION:</strong> <span class="value loading" data-i18n="loading">Loading</span></div>
+                <div><strong data-i18n="latestVersion">LATEST VERSION:</strong> <span class="value loading">Loading</span></div>
+                <div><strong data-i18n="status">STATUS:</strong> <span class="status loading" data-i18n="checking">Checking</span></div>
+            </div>
+
+            <div class="panel">
+                <h2 data-i18n="aboutTitle">▣ SYSTEM INFORMATION</h2>
+                <p data-i18n="aboutText" style="line-height: 1.6; color: #333;">
+                    Automated assembly system for Minecraft Forge servers.<br>
+                    Modpack: <strong style="color: #2c5aa0;">Ideal Industrial Assembly</strong><br>
+                    Version: Forge 1.7.10-10.13.4.1614
+                </p>
+            </div>
+
+            <div style="text-align: center; margin: 20px 0;">
+                <a href="/download" class="download-btn" data-i18n="downloadButton">
+                    ⚡ DOWNLOAD SERVER ⚡
+                </a>
+            </div>
+
+            <div class="tech-line"></div>
+
+            <div class="panel">
+                <div class="info-grid">
+                    <div class="info-item" data-i18n="feature1">Latest modpack version from Yandex.Disk</div>
+                    <div class="info-item" data-i18n="feature2">EULA accepted, RTG mapgen configured</div>
+                    <div class="info-item" data-i18n="feature3">Client-only mods removed (OptiFine, etc.)</div>
+                    <div class="info-item" data-i18n="feature4">start.bat (Windows) & start.sh (Linux/Mac)</div>
+                </div>
+            </div>
+        </div>
+
+        <footer>
+            <p data-i18n="poweredBy">
+                Modpack by <a href="https://idealindustrial.github.io/" target="_blank"><strong>Sapient</strong></a>
+            </p>
+            <p data-i18n="credits" style="margin-top: 5px;">Don't trust random server builders? <a href="https://github.com/pinkhairedboy/iisautoserver.pinkhaired.com" target="_blank">Check the source code →</a></p>
+        </footer>
+    </div>
+
+    <script>
+        const translations = {
+            en: {
+                title: 'IIS AUTO SERVER',
+                subtitle: 'Automatic Server Builder',
+                currentVersion: 'CURRENT VERSION:',
+                latestVersion: 'LATEST VERSION:',
+                status: 'STATUS:',
+                loading: 'Loading',
+                checking: 'Checking',
+                aboutTitle: '▣ SYSTEM INFORMATION',
+                aboutText: 'Automated server builder for <strong style="color: #2c5aa0;">Ideal Industrial Assembly</strong> modpack.<br>Forge 1.7.10-10.13.4.1614 | RTG World Generation<br>RAM: 4GB min, 24GB max (configurable in start scripts)<br><br><strong style="color: #27ae60;">How it works:</strong> Click download → Server builds automatically from latest version → Get ready-to-run archive',
+                downloadButton: '⚡ DOWNLOAD SERVER ⚡',
+                featuresTitle: '▣ FEATURES',
+                feature1: 'Latest modpack version from Yandex.Disk',
+                feature2: 'EULA accepted, RTG mapgen configured',
+                feature3: 'Client-only mods removed (OptiFine, etc.)',
+                feature4: 'start.bat (Windows) & start.sh (Linux/Mac)',
+                poweredBy: 'Modpack by <a href="https://idealindustrial.github.io/" target="_blank"><strong>Sapient</strong></a>',
+                credits: 'Don\'t trust random server builders? <a href="https://github.com/pinkhairedboy/iisautoserver.pinkhaired.com" target="_blank">Check the source code →</a>',
+                statusBuilding: 'BUILDING {version}',
+                statusNewVersion: 'UPDATE AVAILABLE: {version}',
+                statusReady: 'READY TO DOWNLOAD',
+                statusNone: 'NO SERVER BUILT',
+                statusError: 'SYSTEM ERROR'
+            },
+            ru: {
+                title: 'IIS AUTO SERVER',
+                subtitle: 'Автоматическая сборка серверов',
+                currentVersion: 'ТЕКУЩАЯ ВЕРСИЯ:',
+                latestVersion: 'ПОСЛЕДНЯЯ ВЕРСИЯ:',
+                status: 'СТАТУС:',
+                loading: 'Загрузка',
+                checking: 'Проверка',
+                aboutTitle: '▣ ИНФОРМАЦИЯ О СИСТЕМЕ',
+                aboutText: 'Автоматическая сборка сервера для модпака <strong style="color: #2c5aa0;">Идеальная Индустриальная Сборка</strong>.<br>Forge 1.7.10-10.13.4.1614 | Генерация мира RTG<br>ОЗУ: минимум 4GB, максимум 24GB (настраивается в скриптах)<br><br><strong style="color: #27ae60;">Как работает:</strong> Нажми скачать → Сервер собирается из последней версии → Получи готовый архив',
+                downloadButton: '⚡ СКАЧАТЬ СЕРВЕР ⚡',
+                featuresTitle: '▣ ВОЗМОЖНОСТИ',
+                feature1: 'Последняя версия модпака с Яндекс.Диска',
+                feature2: 'EULA принята, настроен RTG mapgen',
+                feature3: 'Удалены клиентские моды (OptiFine и др.)',
+                feature4: 'start.bat (Windows) и start.sh (Linux/Mac)',
+                poweredBy: 'Модпак от <a href="https://idealindustrial.github.io/" target="_blank"><strong>Sapient</strong></a>',
+                credits: 'Переживаете за трояны ;D? <a href="https://github.com/pinkhairedboy/iisautoserver.pinkhaired.com" target="_blank">Весь код здесь →</a>',
+                statusBuilding: 'СБОРКА {version}',
+                statusNewVersion: 'ДОСТУПНО ОБНОВЛЕНИЕ: {version}',
+                statusReady: 'ГОТОВ К ЗАГРУЗКЕ',
+                statusNone: 'СЕРВЕР НЕ СОБРАН',
+                statusError: 'СИСТЕМНАЯ ОШИБКА'
+            }
+        };
+
+        function detectLanguage() {
+            const browserLang = navigator.language || navigator.userLanguage;
+            const langCode = browserLang.split('-')[0].toLowerCase();
+            return translations[langCode] ? langCode : 'en';
+        }
+
+        function applyTranslations(lang) {
+            const t = translations[lang];
+            document.documentElement.lang = lang;
+
+            document.querySelectorAll('[data-i18n]').forEach(element => {
+                const key = element.getAttribute('data-i18n');
+                if (t[key]) {
+                    element.innerHTML = t[key];
+                }
+            });
+        }
+
+        const urlParams = new URLSearchParams(window.location.search);
+        const currentLang = urlParams.get('lang') || detectLanguage();
+        applyTranslations(currentLang);
+
+        fetch('/version')
+            .then(response => response.json())
+            .then(data => {
+                const t = translations[currentLang];
+                const versionInfo = document.getElementById('version-info');
+
+                let statusText = '';
+                let statusClass = '';
+
+                if (data.buildInProgress) {
+                    statusText = t.statusBuilding.replace('{version}', data.latestVersion);
+                    statusClass = 'building';
+                } else if (!data.hasBuiltServer) {
+                    statusText = t.statusNone;
+                    statusClass = '';
+                } else if (data.updateAvailable) {
+                    statusText = t.statusNewVersion.replace('{version}', data.latestVersion);
+                    statusClass = '';
+                } else {
+                    statusText = t.statusReady;
+                    statusClass = 'ready';
+                }
+
+                versionInfo.innerHTML = `
+                    <div><strong>${t.currentVersion}</strong> <span class="value">${data.currentVersion || 'NONE'}</span></div>
+                    <div><strong>${t.latestVersion}</strong> <span class="value">${data.latestVersion || 'UNKNOWN'}</span></div>
+                    <div><strong>${t.status}</strong> <span class="status ${statusClass}">${statusText}</span></div>
+                `;
+            })
+            .catch(error => {
+                const t = translations[currentLang];
+                console.error('Error:', error);
+                document.getElementById('version-info').innerHTML = `
+                    <div><strong>${t.status}</strong> <span class="status error">${t.statusError}</span></div>
+                `;
+            });
+
+        setInterval(() => {
+            fetch('/version')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.buildInProgress) {
+                        location.reload();
+                    }
+                })
+                .catch(error => console.error('Error:', error));
+        }, 5000);
+    </script>
+</body>
+</html>

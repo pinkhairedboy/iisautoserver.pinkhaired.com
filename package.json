@@ -1,0 +1,28 @@
+{
+  "name": "iis-auto-server",
+  "version": "1.0.0",
+  "description": "Automated Minecraft Forge server builder for Ideal Industrial Assembly modpack",
+  "main": "src/index.js",
+  "scripts": {
+    "start": "node src/index.js",
+    "dev": "nodemon src/index.js"
+  },
+  "keywords": [
+    "minecraft",
+    "forge",
+    "server",
+    "automation"
+  ],
+  "author": "pinkhaired.com",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.18.2",
+    "adm-zip": "^0.5.10"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.1"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
