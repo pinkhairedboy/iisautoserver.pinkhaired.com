@@ -6,7 +6,7 @@ services:
     container_name: iisautoserver.pinkhaired.com
     restart: unless-stopped
     ports:
-      - "3003:3003"
+      - "127.0.0.1:3003:3003"
     volumes:
       # Storage volume for persistent data (latest.zip, current.txt)
       - ./storage:/app/storage
